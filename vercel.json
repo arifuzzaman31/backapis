@@ -1,7 +1,5 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "installCommand": "npm ci --no-audit --no-fund",
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/api" }
-  ]
+  "framework": "express",
+  "installCommand": "npm ci --no-audit --no-fund"
 }
