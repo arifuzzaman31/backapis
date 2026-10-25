@@ -2,11 +2,21 @@ const express = require('express');
 const helmet = require('helmet');
 const cors = require('cors');
 const rateLimit = require('express-rate-limit');
+const { connectDB } = require('./config/db');
 
 const app = express();
 app.use(helmet());
 app.use(cors());
 app.use(express.json({ limit: '100kb' }));
+
+app.use(async (req, res, next) => {
+  try {
+    await connectDB(process.env.MONGO_URI || process.env.MONGODB_URI);
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
 
 const authLimiter = rateLimit({ windowMs: 15 * 60 * 1000, limit: 50 });
 
