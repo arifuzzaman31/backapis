@@ -5,7 +5,7 @@ const app = require('./app');
 if (require.main === module) {
   const uri = process.env.MONGO_URI || process.env.MONGODB_URI;
   connectDB(uri)
-    .then(() => app.listen(process.env.PORT || 3001, () => console.log('API up')))
+    .then(() => app.listen(process.env.PORT || 3001, () => console.log('API is running...')))
     .catch((err) => { console.error(err); process.exit(1); });
 }
 
