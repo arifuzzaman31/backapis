@@ -10,22 +10,10 @@ exports.create = async (req, res) => {
 
 exports.listAll = async (req, res) => {           // public feed, IXSCAN { createdAt:-1 }
   const { page, limit, skip } = parsePagination(req.query);
-  const [total, posts] = await Promise.all([
+  const [total, data] = await Promise.all([
     Post.countDocuments({}),
-    Post.find({}).sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
+    Post.find({}).sort({ createdAt: -1 }).skip(skip).limit(limit).populate('author', 'name email').lean(),
   ]);
-  const authorIds = [...new Set(posts.map((p) => p.author).filter(Boolean))];
-  const users = await User.find({ _id: { $in: authorIds } }).select('name email').lean();
-  const userMap = {};
-  for (const u of users) userMap[u._id.toString()] = u;
-  const data = posts.map((p) => {
-    const u = userMap[p.author?.toString()];
-    return {
-      ...p,
-      authorId: p.author,
-      authorName: u?.name || u?.email || p.author,
-    };
-  });
   const totalPages = Math.ceil(total / limit);
   res.json({ data, pagination: { page, limit, total, totalPages: totalPages || 1, hasNextPage: page < totalPages } });
 };
